@@ -1,0 +1,48 @@
+{
+  "name": "agent-starter-node",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"**/*.{ts,js}\"",
+    "lint:fix": "eslint --fix \"**/*.{ts,js}\"",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "download-files": "pnpm run build && node dist/agent.js download-files",
+    "dev": "pnpm run build && node dist/agent.js dev",
+    "start": "pnpm run build && node dist/agent.js start"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.0.0",
+    "@eslint/js": "^9.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@livekit/agents": "next",
+    "@livekit/agents-plugin-cartesia": "next",
+    "@livekit/agents-plugin-deepgram": "next",
+    "@livekit/agents-plugin-livekit": "next",
+    "@livekit/agents-plugin-openai": "next",
+    "@livekit/agents-plugin-silero": "next",
+    "@livekit/noise-cancellation-node": "0.x",
+    "dotenv": "^17.0.0",
+    "zod": "^3.23.8"
+  }
+}
