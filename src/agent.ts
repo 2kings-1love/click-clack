@@ -13,6 +13,10 @@ import * as silero from '@livekit/agents-plugin-silero';
 import { BackgroundVoiceCancellation } from '@livekit/noise-cancellation-node';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
+import {
+  RadioLineCommunicationManager,
+  createSIPConfigFromEnv,
+} from './telephony.js';
 
 dotenv.config({ path: '.env.local' });
 
@@ -53,6 +57,11 @@ export default defineAgent({
     proc.userData.vad = await silero.VAD.load();
   },
   entry: async (ctx: JobContext) => {
+    // Initialize radio line communication manager for connecting radio/phone lines
+    // to the agent's communication system
+    const sipConfig = createSIPConfigFromEnv();
+    const radioLineManager = new RadioLineCommunicationManager(sipConfig);
+    ctx.proc.userData.radioLineManager = radioLineManager;
     // Set up a voice AI pipeline using OpenAI, Cartesia, AssemblyAI, and the LiveKit turn detector
     const session = new voice.AgentSession({
       // Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
@@ -118,8 +127,22 @@ export default defineAgent({
       },
     });
 
+    // Attach radio line manager to the room for communication line integration
+    radioLineManager.attachToRoom(ctx.room);
+
     // Join the room and connect to the user
     await ctx.connect();
+
+    // If a phone number is provided via metadata, connect the radio line
+    const phoneNumber = ctx.room.metadata;
+    if (phoneNumber && phoneNumber.startsWith('+')) {
+      try {
+        const connection = await radioLineManager.connectRadioLine(phoneNumber);
+        console.log(`Radio line connection established: ${connection.id}`);
+      } catch (error) {
+        console.error(`Failed to connect radio line: ${error}`);
+      }
+    }
   },
 });
 
